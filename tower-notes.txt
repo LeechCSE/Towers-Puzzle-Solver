@@ -1,0 +1,114 @@
+Every tests were conducted on
+      Lnxsrv09
+with
+      (GNU Prolog) 1.4.4
+
+**************
+* Statistics *
+**************
+Since plain_tower/3 runs too slow with N = 4 to generate statistics,
+I used N = 3.
+
+Test case used:
+     N = 3,
+     counts([3,2,1],
+	    [1,2,2],
+       	    [3,2,1],
+	    [1,2,2])
+     Output: T  
+
+
+/** tower/3 **/
+/* statistic/0 */
+
+Memory               limit         in use            free
+
+   trail  stack      16383 Kb            0 Kb        16383 Kb
+   cstr   stack      16384 Kb            0 Kb        16384 Kb
+   global stack      32767 Kb            2 Kb        32765 Kb
+   local  stack      16383 Kb            0 Kb        16383 Kb
+   atom   table      32768 atoms      1783 atoms     30985 atoms
+
+Times              since start      since last
+
+   user   time       0.013 sec       0.013 sec
+   system time       0.010 sec       0.010 sec
+   cpu    time       0.023 sec       0.005 sec
+   real   time     796.733 sec     796.733 sec
+
+
+/** plain_tower/3 **/
+/* statistic/0 */
+
+Memory               limit         in use            free
+
+   trail  stack      16383 Kb            0 Kb        16383 Kb
+   cstr   stack      16384 Kb            0 Kb        16384 Kb
+   global stack      32767 Kb            4 Kb        32763 Kb
+   local  stack      16383 Kb            0 Kb        16383 Kb
+   atom   table      32768 atoms      1793 atoms     30975 atoms
+
+Times              since start      since last
+
+   user   time       9.866 sec       0.069 sec
+   system time       0.065 sec       0.001 sec
+   cpu    time       9.931 sec       0.070 sec
+   real   time    1140.131 sec      41.381 sec
+
+
+From the data above, the difference in CPU time of tower/3 and plain_tower/3
+shows that tower/3 that uses the finite domain solver, is around 14 times
+faster than plain_tower/3. Considering N = 3 case is not that heavy operation,
+the difference in performance will be much significant with higher N.
+
+
+*********************
+* speedup/1 Results *
+*********************
+
+Even though I wrote the results in tower.pl, I re-write here as well.
+Test case used:
+     N = 3,
+     counts([3,2,1],
+	    [1,2,2],
+       	    [3,2,1],
+	    [1,2,2])
+     Output: T  
+
+Results:
+	With 20 runs,
+	Max R = 1.2727272727272727
+	Min R = 1.0
+	Mean R = 1.124483333333333
+
+Like above, this ratio will be bigger with the higher N.
+
+
+***********************
+* ambiguous/4 Results *
+***********************
+Idea:
+	I run two tower/2 with the same N and counts, C, and checked if the
+	outputs, T1 and T2, are the same or not using sublist/2.
+Results:
+	Interestingly, there are so many ambiguous puzzles
+	(hundres, thousands ... billions ...).
+	One of them is:
+	
+	N = 4,
+	C = counts([4,2,2,1],[1,2,2,4],[4,2,2,1],[1,2,2,4])
+	T1 = [[1,2,3,4],	T2 = [[1,2,3,4],
+	      [2,1,4,3],	      [2,4,1,3],
+	      [3,4,1,2],	      [3,1,4,2],
+	      [4,3,2,1]]	      [4,3,2,1]]
+
+	Looking at the pattern on counts, it has a diagonal-symmetric form. It
+	makes inner 4 blocks in T be ambiguous.
+	i.e. the both inner 4 blocks are valid with the same above counts!
+		---------		---------
+		| 1 | 4 |		| 4 | 1 |
+		---------	OR	---------
+		| 4 | 1 |		| 1 | 4 |
+		---------		---------
+		
+	As mentioned, there are so many ambiguous puzzles.
